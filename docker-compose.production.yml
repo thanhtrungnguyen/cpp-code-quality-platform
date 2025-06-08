@@ -1,0 +1,46 @@
+volumes:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+
+  # production_redis_data: {}
+
+services:
+  nextjs: &nextjs
+    build:
+      context: .
+      dockerfile: ./compose/production/nextjs/Dockerfile
+
+    image: cpp_code_quality_platform_production_nextjs
+    depends_on:
+      - postgres
+      # - redis
+    env_file:
+      - ./.envs/.production/.nextjs
+      - ./.envs/.production/.postgres
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: cpp_code_quality_platform_production_postgres
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.production/.postgres
+
+  # redis:
+  #   image: docker.io/redis:6
+
+  #   volumes:
+  #     - production_redis_data:/data
+
+  # awscli:
+  #   build:
+  #     context: .
+  #     dockerfile: ./compose/production/aws/Dockerfile
+  #   env_file:
+  #     - ./.envs/.production/.nextjs
+  #   volumes:
+  #     - production_postgres_data_backups:/backups:z

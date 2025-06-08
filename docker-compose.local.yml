@@ -1,0 +1,42 @@
+volumes:
+  cpp_code_quality_platform_local_postgres_data: {}
+  cpp_code_quality_platform_local_postgres_data_backups: {}
+  # cpp_code_quality_platform_local_redis_data: {}
+
+services:
+  nextjs: &nextjs
+    build:
+      context: .
+      dockerfile: ./compose/local/nextjs/Dockerfile
+    image: cpp_code_quality_platform_local_nextjs
+    container_name: cpp_code_quality_platform_local_nextjs
+    depends_on:
+      - postgres
+      # - redis
+    volumes:
+      - .:/app:z
+    env_file:
+      - ./.envs/.local/.nextjs
+      - ./.envs/.local/.postgres
+    ports:
+      - '3000:3000'
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: cpp_code_quality_platform_production_postgres
+    container_name: cpp_code_quality_platform_local_postgres
+    volumes:
+      - cpp_code_quality_platform_local_postgres_data:/var/lib/postgresql/data
+      - cpp_code_quality_platform_local_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.local/.postgres
+
+  # redis:
+  #   image: docker.io/redis:6
+  #   container_name: cpp_code_quality_platform_local_redis
+
+  #   volumes:
+  #     - cpp_code_quality_platform_local_redis_data:/data
