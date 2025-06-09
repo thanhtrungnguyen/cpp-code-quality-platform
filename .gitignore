@@ -33,13 +33,13 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env*.local
+# .env*.local
 
 # Sentry Config File
 .env.sentry-build-plugin
 
 # local folder
-local
+# local
 
 # vercel
 .vercel

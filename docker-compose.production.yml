@@ -18,6 +18,8 @@ services:
       - ./.envs/.production/.nextjs
       - ./.envs/.production/.postgres
     command: /start
+    ports:
+      - '3000:3000'
 
   postgres:
     build:
@@ -29,6 +31,9 @@ services:
       - production_postgres_data_backups:/backups
     env_file:
       - ./.envs/.production/.postgres
+    # FIXME: it shouldn't expose on production
+    ports:
+      - '5432:5432'
 
   # redis:
   #   image: docker.io/redis:6

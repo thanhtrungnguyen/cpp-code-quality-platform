@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -o errexit
+set -o nounset
+
+# Quick database setup if needed
+if [ "${SETUP_DB:-false}" = "true" ]; then
+  echo "Setting up database..."
+  npm run db:generate
+fi
+
+# Start in dev mode by default
+echo "Starting Next.js development server..."
+exec npm run dev
