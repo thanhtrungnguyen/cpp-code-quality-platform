@@ -211,6 +211,9 @@ npm install
 
 For your information, all dependencies are updated every month.
 
+Environment variables are stored in the `./.envs` directory. Edit the files in
+`./.envs/.local` with your local credentials.
+
 Then, you can run the project locally in development mode with live reload by executing:
 
 ```shell
@@ -219,9 +222,17 @@ npm run dev
 
 Open http://localhost:3000 with your favorite browser to see your project.
 
+You can also start the stack using Docker Compose:
+
+```shell
+docker compose -f docker-compose.local.yml up
+```
+
+This command reads environment variables from the files under `./.envs/.local`.
+
 ### Set up authentication
 
-To get started, you will need to create a Clerk account at [Clerk.com](https://clerk.com?utm_source=github&utm_medium=sponsorship&utm_campaign=nextjs-boilerplate) and create a new application in the Clerk Dashboard. Once you have done that, copy the `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` values and add them to the `.env.local` file (not tracked by Git):
+To get started, you will need to create a Clerk account at [Clerk.com](https://clerk.com?utm_source=github&utm_medium=sponsorship&utm_campaign=nextjs-boilerplate) and create a new application in the Clerk Dashboard. Once you have done that, copy the `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` values and add them to the `./.envs/.local/.nextjs` file (not tracked by Git):
 
 ```shell
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_pub_key
@@ -279,7 +290,7 @@ You can easily configure Next js Boilerplate by searching the entire project for
 - `src/utils/AppConfig.ts`: configuration file
 - `src/templates/BaseTemplate.tsx`: default theme
 - `next.config.ts`: Next.js configuration
-- `.env`: default environment variables
+- `.envs`: directory containing example environment files
 
 You have full access to the source code for further customization. The provided code is just an example to help you start your project. The sky's the limit 🚀.
 
