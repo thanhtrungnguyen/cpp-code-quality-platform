@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/thanhtrungnguyen/cpp-code-quality-platform/compare/v1.0.1...v1.0.2) (2025-06-09)
+
+
+### Bug Fixes
+
+* change shell interpreter from sh to bash in startup scripts ([b0dcd6c](https://github.com/thanhtrungnguyen/cpp-code-quality-platform/commit/b0dcd6c592598dd73c02ab101cf2d82ff90b7419))
+
 ## [1.0.1](https://github.com/thanhtrungnguyen/cpp-code-quality-platform/compare/v1.0.0...v1.0.1) (2025-06-09)
 
 
