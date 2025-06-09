@@ -65,11 +65,11 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 # We already installed the necessary dependencies in the base stage
 
 # Setup startup scripts
-COPY ./compose/production/django/entrypoint /entrypoint
+COPY ./compose/production/nextjs/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 
-COPY ./compose/local/django/start /start
+COPY ./compose/local/nextjs/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
@@ -87,4 +87,3 @@ ENV HOSTNAME="0.0.0.0"
 
 # Use the entrypoint script to handle database connection before starting
 ENTRYPOINT ["/entrypoint"]
-CMD ["/start"]
