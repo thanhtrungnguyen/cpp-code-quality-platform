@@ -1,3 +1,10 @@
+# 1.0.0 (2025-06-09)
+
+
+### Bug Fixes
+
+* update PostgreSQL credentials and adjust Dockerfile for entrypoint and startup scripts ([e6747d7](https://github.com/thanhtrungnguyen/cpp-code-quality-platform/commit/e6747d71c9d05642483e40d6a41b184c33422b62))
+
 # [3.69.0](https://github.com/ixartz/Next-js-Boilerplate/compare/v3.68.0...v3.69.0) (2025-06-04)
 
 
