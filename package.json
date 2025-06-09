@@ -1,6 +1,6 @@
 {
   "name": "cpp-code-quality-platform",
-  "version": "3.69.0",
+  "version": "1.0.0",
   "author": "Ixartz (https://github.com/ixartz)",
   "engines": {
     "node": ">=20"
