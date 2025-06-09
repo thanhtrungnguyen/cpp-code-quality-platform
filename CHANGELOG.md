@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/thanhtrungnguyen/cpp-code-quality-platform/compare/v1.0.0...v1.0.1) (2025-06-09)
+
+
+### Bug Fixes
+
+* update entrypoint and startup script paths for Next.js ([b468f75](https://github.com/thanhtrungnguyen/cpp-code-quality-platform/commit/b468f750d0f5e9031a22fdcfaba05874249318ee))
+
 # 1.0.0 (2025-06-09)
 
 
