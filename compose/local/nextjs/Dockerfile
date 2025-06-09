@@ -65,11 +65,13 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 # We already installed the necessary dependencies in the base stage
 
 # Setup startup scripts
-COPY ./compose/production/nextjs/entrypoint /entrypoint
-COPY ./compose/local/nextjs/start /start
-RUN chmod +x /entrypoint \
-    && chmod +x /start \
-    && chown dev-user:dev-user /entrypoint /start
+COPY ./compose/production/django/entrypoint /entrypoint
+RUN sed -i 's/\r$//g' /entrypoint
+RUN chmod +x /entrypoint
+
+COPY ./compose/local/django/start /start
+RUN sed -i 's/\r$//g' /start
+RUN chmod +x /start
 
 # Copy only the essential files for development
 COPY --from=builder --chown=dev-user:dev-user /app/. ./

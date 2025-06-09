@@ -26,6 +26,7 @@ services:
     #   - SPOTLIGHT_ENABLED=true
     ports:
       - '3000:3000'
+    command: /start
     #   - '9000:9000' # For Spotlight sidecar
     # # For browser testing compatibility
     # cap_add:
