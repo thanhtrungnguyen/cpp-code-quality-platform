@@ -1,70 +1,62 @@
-# syntax=docker.io/docker/dockerfile:1
-
 FROM node:lts-bookworm-slim AS base
 
-# Base system setup
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    libc6 \
-    sudo \
-    bash \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Add wait-for-it script for Postgres connection handling
-ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it
-RUN chmod +x /wait-for-it
-
-# Create dev user at the base level so it's available in all stages
-# Use -o flag for useradd to allow non-unique UID and handle existing UID gracefully
-RUN groupadd -f --gid 1000 dev-user \
-    && if ! id -u dev-user &>/dev/null; then useradd -o --uid 1000 --gid dev-user --shell /bin/bash --create-home dev-user || true; fi \
-    && echo "dev-user ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/dev-user \
-    && chmod 0440 /etc/sudoers.d/dev-user
-
-# Install dependencies only when needed
+# 1. Install dependencies only when needed
 FROM base AS deps
 
-WORKDIR /app
+ARG BUILD_ENVIRONMENT=local
+ARG APP_HOME=/app
+
+WORKDIR ${APP_HOME}
+# Install apt packages
+RUN apt-get update && apt-get install --no-install-recommends -y
 
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
   elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-
-# For development, we don't need to build the app
-# Just prepare the development environment
+# 2. Rebuild the source code only when needed
 FROM base AS builder
-WORKDIR /app
+WORKDIR ${APP_HOME}
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Build the Next.js app to generate .next/standalone and .next/static
+# RUN if [ -f yarn.lock ]; then yarn build; \
+#     elif [ -f package-lock.json ]; then npm run build; \
+#     elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+#     else echo "Lockfile not found." && exit 1; \
+#     fi
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Disable telemetry during build
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# No build step for development - we'll use the dev server instead
-
-# Development image, copy all the files and run next
+# 3. Production image, copy all the files and run next
 FROM base AS runner
-WORKDIR /app
+WORKDIR ${APP_HOME}
 
-ENV NODE_ENV=development
+# Ensure sudoers.d directory exists before writing to it
+RUN mkdir -p /etc/sudoers.d \
+  && groupadd --gid 1001 dev-user \
+  && useradd --uid 1001 --gid dev-user --shell /bin/bash --create-home dev-user \
+  && echo dev-user ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/dev-user \
+  && chmod 0440 /etc/sudoers.d/dev-user
 
-# Install additional development tools
+# Install required system dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
-  git bash-completion nano ssh \
-  && apt-get clean \
+  postgresql-client \
+  wait-for-it \
+  # Translations dependencies
+  gettext \
+  # cleaning up unused files
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-# We already installed the necessary dependencies in the base stage
+# Copy build output for production runner
+# COPY --from=builder /app/public ./public
+# COPY --from=builder --chown=dev-user:dev-user /app/.next/standalone ./
+# COPY --from=builder --chown=dev-user:dev-user /app/.next/static ./.next/static
 
-# Setup startup scripts
 COPY ./compose/production/nextjs/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
@@ -73,17 +65,10 @@ COPY ./compose/local/nextjs/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
-# Copy only the essential files for development
-COPY --from=builder --chown=dev-user:dev-user /app/. ./
-
 USER dev-user
 
 EXPOSE 3000
 
 ENV PORT=3000
 
-# Basic environment setup
-ENV HOSTNAME="0.0.0.0"
-
-# Use the entrypoint script to handle database connection before starting
 ENTRYPOINT ["/entrypoint"]

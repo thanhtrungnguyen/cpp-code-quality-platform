@@ -1,16 +1,16 @@
 {
   "name": "cpp-code-quality-platform",
   "version": "1.0.2",
-  "author": "Ixartz (https://github.com/ixartz)",
+  "author": "C++ Code Quality Platform Team",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "dev:spotlight": "spotlight-sidecar",
-    "dev:next": "dotenv -e ./.envs/.local/.nextjs -e ./.envs/.local/.postgres -- next dev --turbopack",
+    "dev:next": "next dev --turbopack",
     "dev": "run-p dev:*",
     "build": "next build",
-    "start": "dotenv -e ./.envs/.production/.nextjs -e ./.envs/.production/.postgres -- next start",
+    "start": "next start",
     "build-stats": "cross-env ANALYZE=true npm run build",
     "clean": "rimraf .next out coverage",
     "lint": "eslint .",
@@ -19,8 +19,8 @@
     "test": "vitest run --browser.headless",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "dotenv -e ./.envs/.production/.nextjs -e ./.envs/.production/.postgres -- drizzle-kit migrate",
-    "db:studio": "dotenv -e ./.envs/.production/.nextjs -e ./.envs/.production/.postgres -- drizzle-kit studio",
+    "db:migrate": "dotenv -c production -- drizzle-kit migrate",
+    "db:studio": "dotenv -c production -- drizzle-kit studio",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
     "storybook:serve": "http-server storybook-static --port 6006 --silent",
